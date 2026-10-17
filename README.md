@@ -78,3 +78,7 @@ python servers instead (kept alive on purpose for reuse across runs).
 - Large tables: occasionally split in two; right-column cell text can clip.
 - Bold within table cells dropped; fullwidth punctuation normalized to halfwidth.
 - These are marker v2 pdftext/table-reconstruction limits, not Windows-specific.
+
+## License
+
+MIT
