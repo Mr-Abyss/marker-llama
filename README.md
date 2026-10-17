@@ -85,14 +85,15 @@ around 0.8-0.9 GB throughout.
 - Cross-page tables: split into several fragments, and rows at the page
   boundary can vanish entirely.
 - Table cells: text clipped or shuffled across columns; bold inside cells
-  usually dropped (occasionally survives as `<b>` HTML).
-- Fullwidth punctuation normalized to halfwidth in body text and fullwidth
-  alphanumerics too - but fullwidth inside table cells is kept (inconsistent).
+  usually dropped (occasionally survives as `<b>` HTML); fullwidth
+  punctuation kept inside cells but normalized to halfwidth in body text
+  (fullwidth alphanumerics included) - inconsistent between the two.
 - Heading levels drift (mixed directions); generated heading numbers get
   baked into the text with occasional orphan duplicates.
 - Extra spaces inserted at originally wrapped lines.
-- Single scrollable (non-paged) PDFs can lose the document tail; prefer
-  paged PDFs.
+- **Single scrollable (non-paged) PDFs can silently lose the document
+  tail.** If your source is quarkdown, set `.doctype {paged}` before
+  exporting to PDF.
 - These are marker v2 pdftext/table-reconstruction limits, not Windows-specific.
 
 ## License
