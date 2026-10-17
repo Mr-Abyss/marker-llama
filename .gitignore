@@ -1,0 +1,8 @@
+# marker + surya source clones (research only, not part of this repo)
+/src/
+
+# conversion outputs
+/out/
+
+__pycache__/
+*.pyc

@@ -15,4 +15,4 @@ rem 3) pre-fetch surya VLM GGUFs - hf/xet client ignores HTTP proxy and stalls a
 rem    so curl the files straight into the HF snapshot dir (plain HTTPS respects the proxy).
 python "%~dp0fetch_gguf.py"
 
-echo Done. Use: marker-win\scripts\marker_single.cmd input.pdf --output_dir out
+echo Done. Use: "%~dp0marker_single.cmd" input.pdf --output_dir out

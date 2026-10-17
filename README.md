@@ -9,7 +9,7 @@ I'm a Windows user who don't want to install docker (well it's so much trouble..
 ## Layout
 
 ```
-marker-win/
+marker-llama/
   scripts/
     install.cmd          one-shot (re)installer
     fetch_gguf.py        GGUF prefetch via plain HTTPS (proxy-safe)
@@ -42,9 +42,9 @@ uv tool install --python 3.13 marker-pdf ^
 python scripts\fetch_gguf.py
 ```
 
-Prereqs: `uv` on PATH, NVIDIA driver, `llama-server.exe` (CUDA build) at
-`C:\Users\Alex\AppData\Local\llama-cpp\llama-server.exe` — edit the wrappers
-if that path changes.
+Prereqs: `uv` on PATH, NVIDIA driver, and a CUDA-build `llama-server.exe`.
+Wrappers default to `%LOCALAPPDATA%\llama-cpp\llama-server.exe`; set
+`LLAMA_CPP_BINARY` in your environment before launching to override.
 
 ## Usage
 
@@ -55,9 +55,9 @@ scripts\marker.cmd docs_dir --output_dir out                       :: batch dir
 scripts\marker_gui.cmd                                             :: streamlit UI
 ```
 
-Wrappers set `LLAMA_CPP_BINARY`, `SURYA_INFERENCE_BACKEND=llamacpp`,
-`PYTHONUTF8=1`, then forward to the uv-tool executables, so every marker
-subcommand keeps its normal CLI.
+Wrappers default `LLAMA_CPP_BINARY` (a preset value wins), set
+`SURYA_INFERENCE_BACKEND=llamacpp`, `PYTHONUTF8=1`, then forward to the
+uv-tool executables, so every marker subcommand keeps its normal CLI.
 
 First run of `balanced` mode spawns `llama-server.exe` (loads ~1.5 GB GGUF
 onto the GPU), converts, then exits cleanly. `fast` mode spawns lightweight
