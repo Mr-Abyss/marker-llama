@@ -18,8 +18,8 @@ marker-llama/
     marker_single.cmd    (same body, self-naming: %~n0 -> matching exe)
     marker_gui.cmd
     marker_server.cmd
-  out/                   test conversions
-  src/                   marker + surya clones, research only - DELETABLE
+  tests/                 synthetic conversion test + findings (see tests/README.md)
+  out/                   local conversions, gitignored
 ```
 
 ## Install
@@ -63,6 +63,11 @@ First run of `balanced` mode spawns `llama-server.exe` (loads ~1.5 GB GGUF
 onto the GPU), converts, then exits cleanly. `fast` mode spawns lightweight
 python servers instead (kept alive on purpose for reuse across runs).
 
+Throughput on a T1000 4GB (balanced): text-layer PDFs run ~16-18 s/page;
+scanned PDFs (no text layer, full-page VLM OCR) run ~160 s/page - a
+300-page scan is an overnight job on this class of GPU. VRAM stays flat
+around 0.8-0.9 GB throughout.
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -72,11 +77,22 @@ python servers instead (kept alive on purpose for reuse across runs).
 | `pillow` source build failure | uv picked Python 3.14; reinstall with `--python 3.13` |
 | llama-server OOM on 4 GB VRAM | uncomment `SURYA_INFERENCE_PARALLEL=2` / `SURYA_INFERENCE_CTX_SIZE=24576` in the wrappers |
 | uv resolves CPU torch (check `torch.version.__version__` lacks `+cu126`) | missing `--index-strategy unsafe-best-match` or the cu126 extra index |
+| log shows `Failed to stop llamacpp ... WinError 87` or `WinError 5` at the end of a run | harmless: surya's liveness probe uses POSIX-style `os.kill(pid, 0)`, which errors on Windows, but the preceding TerminateProcess already worked (process death verified on 4/4 long runs) |
+| wrappers break on paths with spaces / CJK when called from git-bash | MSYS mangles quoting on its way into cmd; wrappers target native cmd/PowerShell. From git-bash call the exe directly: `env LLAMA_CPP_BINARY=... SURYA_INFERENCE_BACKEND=llamacpp marker_single.exe "file.pdf"` |
 
-## Known limits (observed on the quarkdown test doc)
+## Known limits (reproducible with `tests/test_safe.qd`, see `tests/README.md`)
 
-- Large tables: occasionally split in two; right-column cell text can clip.
-- Bold within table cells dropped; fullwidth punctuation normalized to halfwidth.
+- Cross-page tables: split into several fragments, and rows at the page
+  boundary can vanish entirely.
+- Table cells: text clipped or shuffled across columns; bold inside cells
+  usually dropped (occasionally survives as `<b>` HTML).
+- Fullwidth punctuation normalized to halfwidth in body text and fullwidth
+  alphanumerics too - but fullwidth inside table cells is kept (inconsistent).
+- Heading levels drift (mixed directions); generated heading numbers get
+  baked into the text with occasional orphan duplicates.
+- Extra spaces inserted at originally wrapped lines.
+- Single scrollable (non-paged) PDFs can lose the document tail; prefer
+  paged PDFs.
 - These are marker v2 pdftext/table-reconstruction limits, not Windows-specific.
 
 ## License
